@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vending Machine DFA</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: linear-gradient(135deg, #8e44ad, #e84393, #0984e3);
+        background-size: 400% 400%;
+        animation: gradientBG 10s ease infinite;
+        color: white;
+    }
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    svg {
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px solid white;
+        border-radius: 10px;
+        margin-top: 20px;
+        box-shadow: 0 0 15px rgba(255,255,255,0.5);
+    }
+    .state {
+        fill: #dfe6e9;
+        stroke: #6c5ce7;
+        stroke-width: 3;
+    }
+    .final {
+        stroke-width: 5;
+        stroke: #fd79a8;
+    }
+    .active {
+        fill: #74b9ff !important;
+    }
+    .label {
+        font-size: 14px;
+        font-weight: bold;
+        fill: #2d3436;
+    }
+    .arrow {
+        stroke: white;
+        stroke-width: 2;
+        fill: none;
+        marker-end: url(#arrowhead);
+    }
+    button {
+        margin: 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background: linear-gradient(45deg, #6c5ce7, #fd79a8);
+        color: white;
+        font-weight: bold;
+        transition: transform 0.2s;
+    }
+    button:hover {
+        transform: scale(1.05);
+    }
+    #status {
+        font-size: 20px;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<h2>🥤 Vending Machine DFA</h2>
+<p>Insert coins until you reach ₹15 to get a drink.</p>
+
+<div>
+    <button onclick="insertCoin(5)">Insert ₹5</button>
+    <button onclick="insertCoin(10)">Insert ₹10</button>
+    <button onclick="resetMachine()">Reset</button>
+</div>
+
+<svg id="dfaCanvas" width="800" height="400"></svg>
+
+<p id="status"></p>
+
+<script>
+// ===================== DFA CONFIGURATION =====================
+const states = ["₹0", "₹5", "₹10", "₹15"];
+const startState = "₹0";
+const finalStates = ["₹15"]; // Drink dispensed here
+const transitions = [
+    { from: "₹0", to: "₹5", symbol: "₹5" },
+    { from: "₹0", to: "₹10", symbol: "₹10" },
+    { from: "₹5", to: "₹10", symbol: "₹5" },
+    { from: "₹5", to: "₹15", symbol: "₹10" },
+    { from: "₹10", to: "₹15", symbol: "₹5" },
+    { from: "₹10", to: "₹15", symbol: "₹10" }
+];
+// =============================================================
+
+let currentState = startState;
+
+// Get SVG canvas
+const svg = document.getElementById("dfaCanvas");
+
+// Arrowhead definition
+svg.innerHTML = `
+<defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+            refX="10" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="white" />
+    </marker>
+</defs>
+`;
+
+const centerX = 400, centerY = 200, radius = 150;
+const statePositions = {};
+states.forEach((state, i) => {
+    const angle = (2 * Math.PI / states.length) * i;
+    statePositions[state] = {
+        x: centerX + radius * Math.cos(angle),
+        y: centerY + radius * Math.sin(angle)
+    };
+});
+
+// Draw transitions
+transitions.forEach(t => {
+    const fromPos = statePositions[t.from];
+    const toPos = statePositions[t.to];
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", fromPos.x);
+    line.setAttribute("y1", fromPos.y);
+    line.setAttribute("x2", toPos.x);
+    line.setAttribute("y2", toPos.y);
+    line.setAttribute("class", "arrow");
+    svg.appendChild(line);
+
+    const labelX = (fromPos.x + toPos.x) / 2;
+    const labelY = (fromPos.y + toPos.y) / 2 - 10;
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", labelX);
+    label.setAttribute("y", labelY);
+    label.setAttribute("text-anchor", "middle");
+    label.setAttribute("fill", "white");
+    label.textContent = t.symbol;
+    svg.appendChild(label);
+});
+
+// Draw states
+const stateCircles = {};
+states.forEach(state => {
+    const pos = statePositions[state];
+    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("cx", pos.x);
+    circle.setAttribute("cy", pos.y);
+    circle.setAttribute("r", 40);
+    circle.setAttribute("class", "state" + (finalStates.includes(state) ? " final" : ""));
+    svg.appendChild(circle);
+    stateCircles[state] = circle;
+
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", pos.x);
+    text.setAttribute("y", pos.y + 5);
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("class", "label");
+    text.textContent = state;
+    svg.appendChild(text);
+});
+
+// Start arrow
+const startPos = statePositions[startState];
+const startArrow = document.createElementNS("http://www.w3.org/2000/svg", "line");
+startArrow.setAttribute("x1", startPos.x - 80);
+startArrow.setAttribute("y1", startPos.y);
+startArrow.setAttribute("x2", startPos.x - 40);
+startArrow.setAttribute("y2", startPos.y);
+startArrow.setAttribute("class", "arrow");
+svg.appendChild(startArrow);
+
+// Highlight current state
+function highlightState(state) {
+    Object.values(stateCircles).forEach(c => c.classList.remove("active"));
+    stateCircles[state].classList.add("active");
+}
+highlightState(currentState);
+
+// Insert coin logic
+function insertCoin(amount) {
+    let nextState = null;
+    for (let t of transitions) {
+        if (t.from === currentState && t.symbol === `₹${amount}`) {
+            nextState = t.to;
+            break;
+        }
+    }
+    if (nextState) {
+        currentState = nextState;
+        highlightState(currentState);
+        if (finalStates.includes(currentState)) {
+            document.getElementById("status").textContent = "✅ Drink dispensed!";
+        } else {
+            document.getElementById("status").textContent = `Current balance: ${currentState}`;
+        }
+    } else {
+        document.getElementById("status").textContent = "❌ Invalid coin for this state.";
+    }
+}
+
+// Reset machine
+function resetMachine() {
+    currentState = startState;
+    highlightState(currentState);
+    document.getElementById("status").textContent = "Machine reset. Current balance: ₹0";
+}
+</script>
+
+</body>
+</html>
