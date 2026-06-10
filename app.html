@@ -87,17 +87,41 @@
 
 <script>
 // ===================== DFA CONFIGURATION =====================
-const states = ["₹0", "₹5", "₹10", "₹15","₹20"];
+const states = ["₹0", "₹5", "₹10", "₹15","₹20","₹25","₹0,deliver","₹5,deliver","₹10,deliver","₹15,deliver"];
 const startState = "₹0";
-const finalStates = ["₹15"]; // Drink dispensed here
+const finalStates = ["₹0,deliver","₹5,deliver","₹10,deliver","₹15,deliver"]; 
 const transitions = [
-    { from: "₹0", to: "₹20", symbol: "₹20" },
     { from: "₹0", to: "₹5", symbol: "₹5" },
     { from: "₹0", to: "₹10", symbol: "₹10" },
+    { from: "₹0", to: "₹20", symbol: "₹20" },
     { from: "₹5", to: "₹10", symbol: "₹5" },
     { from: "₹5", to: "₹15", symbol: "₹10" },
+    { from: "₹5", to: "₹25", symbol: "₹20" },
+    { from: "₹10", to: "₹15", symbol: "₹5" },
     { from: "₹10", to: "₹20", symbol: "₹10" },
-    { from: "₹10", to: "₹15", symbol: "₹5" }
+    { from: "₹10", to: "₹0,deliver", symbol: "₹20" },
+    { from: "₹15", to: "₹20", symbol: "₹5" },
+    { from: "₹15", to: "₹25", symbol: "₹10" },
+    { from: "₹15", to: "₹5,deliver", symbol: "₹20" },
+    { from: "₹20", to: "₹25", symbol: "₹5" },
+    { from: "₹20", to: "₹0,deliver", symbol: "₹10" },
+    { from: "₹20", to: "₹10,deliver", symbol: "₹20" },
+    { from: "₹25", to: "₹0,deliver", symbol: "₹5" },
+    { from: "₹25", to: "₹5,deliver", symbol: "₹10" },
+    { from: "₹25", to: "₹15,deliver", symbol: "₹20" },
+    { from: "₹0,deliver", to: "₹5", symbol: "₹5" },
+    { from: "₹0,deliver", to: "₹10", symbol: "₹10" },
+    { from: "₹0,deliver", to: "₹20", symbol: "₹20" },
+    { from: "₹5,deliver", to: "₹10", symbol: "₹5" },
+    { from: "₹5,deliver", to: "₹15", symbol: "₹10" },
+    { from: "₹5,deliver", to: "₹25", symbol: "₹20" },
+    { from: "₹10,deliver", to: "₹15", symbol: "₹5" },
+    { from: "₹10,deliver", to: "₹20", symbol: "₹10" },
+    { from: "₹10,deliver", to: "₹0,deliver", symbol: "₹20" },
+    { from: "₹15,deliver", to: "₹20", symbol: "₹5" },
+    { from: "₹15,deliver", to: "₹25", symbol: "₹10" },
+    { from: "₹15,deliver", to: "₹5,deliver", symbol: "₹20" }
+
 ];
 // =============================================================
 
