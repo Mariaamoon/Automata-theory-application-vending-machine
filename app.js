@@ -54,7 +54,7 @@ svg.innerHTML = `
 //const centerX = 400, centerY = 200, radius = 150;
 const centerX = 600;
 const centerY = 350;
-const radius = 250;
+const radius = 300;
 const statePositions = {};
 states.forEach((state, i) => {
     const angle = (2 * Math.PI / states.length) * i;
@@ -77,12 +77,15 @@ transitions.forEach(t => {
     svg.appendChild(line);
 
     const labelX = (fromPos.x + toPos.x) / 2;
-    const labelY = (fromPos.y + toPos.y) / 2 - 10;
+    const labelY = (fromPos.y + toPos.y) / 2 ;
     const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
     label.setAttribute("x", labelX);
     label.setAttribute("y", labelY);
+    label.setAttribute("paint-order", "stroke");
+label.setAttribute("stroke", "white");
+label.setAttribute("stroke-width", "3");
     label.setAttribute("text-anchor", "middle");
-    label.setAttribute("fill", "white");
+    label.setAttribute("fill", "black");
     label.textContent = t.symbol;
     svg.appendChild(label);
 });
