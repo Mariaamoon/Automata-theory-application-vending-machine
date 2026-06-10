@@ -72,7 +72,7 @@
 <body>
 
 <h2>🥤 Vending Machine DFA</h2>
-<p>Insert coins until you reach ₹15 to get a drink.</p>
+<p>Insert coins until you reach ₹30 to get a drink!</p>
 
 <div>
     <button onclick="insertCoin(5)">Insert ₹5</button>
@@ -81,7 +81,7 @@
     <button onclick="resetMachine()">Reset</button>
 </div>
 
-<svg id="dfaCanvas" width="800" height="400"></svg>
+<svg id="dfaCanvas" width="1200" height="700"></svg>
 
 <p id="status"></p>
 
@@ -140,7 +140,10 @@ svg.innerHTML = `
 </defs>
 `;
 
-const centerX = 400, centerY = 200, radius = 150;
+//const centerX = 400, centerY = 200, radius = 150;
+const centerX = 600;
+const centerY = 350;
+const radius = 250;
 const statePositions = {};
 states.forEach((state, i) => {
     const angle = (2 * Math.PI / states.length) * i;
