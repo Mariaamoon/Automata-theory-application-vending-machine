@@ -1,6 +1,6 @@
-const states = ["₹0", "₹5", "₹10", "₹15","₹20","₹25","₹0,deliver","₹5,deliver","₹10,deliver","₹15,deliver"];
+const states = ["₹0", "₹5", "₹10", "₹15", "₹20", "₹25", "₹0,deliver", "₹5,deliver", "₹10,deliver", "₹15,deliver"];
 const startState = "₹0";
-const finalStates = ["₹0,deliver","₹5,deliver","₹10,deliver","₹15,deliver"]; 
+const finalStates = ["₹0,deliver", "₹5,deliver", "₹10,deliver", "₹15,deliver"];
 const transitions = [
     { from: "₹0", to: "₹5", symbol: "₹5" },
     { from: "₹0", to: "₹10", symbol: "₹10" },
@@ -64,6 +64,7 @@ states.forEach((state, i) => {
     };
 });
 
+const transitionLines = {};
 // Draw transitions
 transitions.forEach(t => {
     const fromPos = statePositions[t.from];
@@ -77,17 +78,21 @@ transitions.forEach(t => {
     svg.appendChild(line);
 
     const labelX = (fromPos.x + toPos.x) / 2;
-    const labelY = (fromPos.y + toPos.y) / 2 ;
+    const labelY = (fromPos.y + toPos.y) / 2;
     const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
     label.setAttribute("x", labelX);
     label.setAttribute("y", labelY);
     label.setAttribute("paint-order", "stroke");
-label.setAttribute("stroke", "white");
-label.setAttribute("stroke-width", "3");
+    label.setAttribute("stroke", "white");
+    label.setAttribute("stroke-width", "3");
     label.setAttribute("text-anchor", "middle");
     label.setAttribute("fill", "black");
     label.textContent = t.symbol;
     svg.appendChild(label);
+
+    transitionLines[
+        `${t.from}-${t.symbol}-${t.to}`
+    ] = line;
 });
 
 // Draw states
@@ -127,7 +132,20 @@ function highlightState(state) {
     stateCircles[state].classList.add("active");
 }
 highlightState(currentState);
+function highlightTransition(from, symbol, to) {
 
+    Object.values(transitionLines)
+        .forEach(line =>
+            line.classList.remove("active-arrow")
+        );
+
+    const key = `${from}-${symbol}-${to}`;
+
+    if (transitionLines[key]) {
+        transitionLines[key]
+            .classList.add("active-arrow");
+    }
+}
 // Insert coin logic
 function insertCoin(amount) {
     let nextState = null;
@@ -138,6 +156,11 @@ function insertCoin(amount) {
         }
     }
     if (nextState) {
+        highlightTransition(
+            currentState,
+            `₹${amount}`,
+            nextState
+        );
         currentState = nextState;
         highlightState(currentState);
         if (finalStates.includes(currentState)) {
@@ -152,7 +175,16 @@ function insertCoin(amount) {
 
 // Reset machine
 function resetMachine() {
+
     currentState = startState;
     highlightState(currentState);
-    document.getElementById("status").textContent = "Machine reset. Current balance: ₹0";
+
+    document.getElementById("status").textContent =
+        "Machine reset. Current balance: ₹0";
+
+    Object.values(transitionLines).forEach(line => {
+    line.classList.remove("active-arrow");
+    line.setAttribute("stroke", "white");
+    line.setAttribute("stroke-width", "2");
+});
 }
