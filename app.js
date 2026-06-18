@@ -173,7 +173,7 @@ function insertCoin(amount) {
     }
 }
 
-// Reset machine
+// Reset machine and reset arrow
 function resetMachine() {
 
     currentState = startState;
